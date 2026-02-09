@@ -1,0 +1,63 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+# Alert manager configuration
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: []
+        # - alertmanager:9093
+
+# Load rules
+rule_files:
+  # - "alert.rules.yml"
+
+# Scrape configurations
+scrape_configs:
+  # Load Balancer
+  - job_name: 'load-balancer'
+    static_configs:
+      - targets: ['load-balancer:5000']
+    scrape_interval: 10s
+    metrics_path: '/metrics'
+
+  # Web Servers
+  - job_name: 'web-servers'
+    static_configs:
+      - targets:
+        - 'web-server-1:5001'
+        - 'web-server-2:5002'
+        - 'web-server-3:5003'
+    scrape_interval: 10s
+    metrics_path: '/metrics'
+
+  # Metrics Collector
+  - job_name: 'metrics-collector'
+    static_configs:
+      - targets: ['metrics-collector:8000']
+    scrape_interval: 10s
+
+  # Node Exporter (if available)
+  - job_name: 'node-exporter'
+    static_configs:
+      - targets: ['node-exporter:9100']
+    scrape_interval: 15s
+
+  # Prometheus self-monitoring
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+# Remote write configuration (optional)
+remote_write:
+  - url: "http://victoriametrics:8428/api/v1/write"
+    queue_config:
+      max_samples_per_send: 10000
+      capacity: 20000
+      max_shards: 10
+
+# Remote read configuration (optional)
+remote_read:
+  - url: "http://victoriametrics:8428/api/v1/read"
+    read_recent: true

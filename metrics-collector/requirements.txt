@@ -1,0 +1,5 @@
+aiohttp==3.9.1
+prometheus-client==0.18.0
+Flask==2.3.3
+psutil==5.9.6
+asyncio==3.4.3
